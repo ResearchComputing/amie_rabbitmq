@@ -1,6 +1,6 @@
 # rabbit mq authentication
 message_queue:
-    host: info1.dyn.xsede.org
+    host: infopub.xsede.org
     port: 5671
     vhost: xsede
 
