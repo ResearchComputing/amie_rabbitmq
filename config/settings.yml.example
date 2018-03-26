@@ -1,0 +1,84 @@
+# rabbit mq authentication
+message_queue:
+    host: info1.dyn.xsede.org
+    port: 5671
+    vhost: xsede
+
+    tls: true
+
+    # If using X.509 Authentication (preferred)
+    # filename with full path of crt file
+    tls_cert: /path/to/host.xsede.org.crt
+
+    # filename with full path of key file
+    tls_key: /path/to/host.xsede.org.key
+
+    # filenames with full path of ca certificate chain
+    tls_ca_certificates:
+        - /path/to/ca.crt
+    auth_mechanism: EXTERNAL
+    verify_peer: true
+
+amie:
+    # TGCDB for central AMIE instance or local site name as defined in AMIE for local instance
+    local_site: TGCDB
+    # TGCDB for local instance or remote site name as defined in AMIE for central instance
+    remote_site: AMIE SITE NAME
+    # name of the rabbitmq exchanges provided by XSEDE
+    write_exchange: amie.from.site.xsede.org
+    read_exchange: amie.to.site.xsede.org
+
+    # folders for transfer,processing, and logging of AMIE XML packets. Use full path
+    # in_folder is where you will read incoming packets from
+    # out_folder is where you will write your response packets
+    # packets that can’t be sent are moved into the respective failed folders
+    # when outgoing packets are sent they are moved to the wait folder, when XSEDE has 
+    # responded they are moved to the done folder
+
+    in_folder: /path/rabbitmq_in
+    received_folder: /path/received
+    out_folder: /path/outbox
+    done_folder: /path/done
+    wait_folder: /path/wait
+    out_failed_folder: /path/out_failed
+    in_failed_folder: /path/in_failed
+    log_folder: /path/logs
+
+# List of all valid packet types.  To prioritize a packet type give a higher number from 1 to 10.
+# The XSEDE RabbitMQ Server has not enabled prioritization so there is no reason to modify the below
+valid_packet_types:
+    data_account_create: 1
+    data_project_create: 1
+    notify_account_create: 1
+    notify_account_inactivate: 1
+    notify_account_reactivate: 1
+    notify_person_duplicate: 1
+    notify_person_ids: 1
+    notify_project_create: 1
+    notify_project_inactivate: 1
+    notify_project_modify: 1
+    notify_project_reactivate: 1
+    notify_project_resources: 1
+    notify_project_usage: 1
+    notify_user_create: 1
+    notify_user_modify: 1
+    notify_user_reactivate: 1
+    notify_user_suspend: 1
+    request_account_create: 1
+    request_account_inactivate: 1
+    request_account_reactivate: 1
+    request_person_merge: 1
+    request_project_create: 1
+    request_project_inactivate: 1
+    request_project_modify: 1
+    request_project_reactivate: 1
+    request_project_resources: 1
+    request_user_create: 1
+    request_user_modify: 1
+    request_user_reactivate: 1
+    request_user_suspend: 1
+    inform_transaction_complete: 1
+    response: 1
+
+
+
