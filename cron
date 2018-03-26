@@ -1,0 +1,1 @@
+11 * * * * cd /usr/local/amie_rabbitmq && /usr/local/rvm/wrappers/ruby-2.4.1/ruby rabbit_transfer_control.rb restart -- -c /usr/local/amie_rabbitmq/config/settings.yml > /dev/null 2>&1
