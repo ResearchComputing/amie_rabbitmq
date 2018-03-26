@@ -11,7 +11,7 @@ require 'logger'
 require_relative 'lib/message_queue'
 
 def process_options
-  options = {config: 'config/settings.yml'}
+  options = {}
   parser = OptionParser.new do |opts|
     opts.banner = 'Usage: amie_transfer.rb [options]'
 
@@ -39,6 +39,12 @@ end
 def process_config(options)
   #Read in the configuration
   config = YAML.load_file(options[:config])
+#  puts 'config ' + config.to_json
+#  unless config.key?('restart_interval')
+#    config['restart_interval'] = 3600
+#  end
+#  # TODO add error checking
+  config
 end
 
 def xml_to_amie_data_hash(xml,logger)
@@ -104,8 +110,11 @@ def packet_type_priority(type,config)
   priority
 end
 
+puts "starting script"
 options = process_options
 config = process_config(options)
+puts config.to_json
+puts '/rabbitmq_transfer.log'
 logger = Logger.new(config['amie']['log_folder'] + '/rabbitmq_transfer.log', 'monthly')
 logger.level = Logger::INFO
 
@@ -180,6 +189,7 @@ end
 # Keep looping looking for new files in the outbox and send them when they are found
 j=0
 start_time = Time.now
+puts 'CONFIG ' + config.to_json
 while(true) do
   Dir[config['amie']['out_folder'] + '/*.xml'].each do |filename|
     message_valid = true
@@ -227,11 +237,12 @@ while(true) do
             FileUtils.mv(filename,config['amie']['wait_folder'])
             logger.info("Moved #{filename} to #{config['amie']['wait_folder']}")
           end
-        else # not successful writing to queue, will retry when script restarts (controlled in cron, recommended hourly)
+        else # not success, try restarting script
           logger.info ("ERROR Failed Publish #{filename}")
           mq_conn.close
           logger.close
-          exit
+          puts "restarting script"
+          exec("#{__FILE__} -c #{options[:config]}" )
         end
       rescue StandardError => e
         logger.error("SEND ERROR #{e.to_s}")
